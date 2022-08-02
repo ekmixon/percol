@@ -113,7 +113,9 @@ class SelectorView(object):
                           ))
                       ))
             exception_raw_string = str(e).decode(self.percol.encoding) if six.PY2 else str(e)
-            self.display_error_message("Error at line " + str(cand_nth) + ": " + exception_raw_string)
+            self.display_error_message(
+                f"Error at line {str(cand_nth)}: {exception_raw_string}"
+            )
 
     results_top_down = True
 
@@ -121,16 +123,10 @@ class SelectorView(object):
     def RESULTS_OFFSET_V(self):
         if self.results_top_down:
             # top -> bottom
-            if self.prompt_on_top:
-                return self.display.Y_BEGIN + 1
-            else:
-                return self.display.Y_BEGIN
+            return self.display.Y_BEGIN + 1 if self.prompt_on_top else self.display.Y_BEGIN
         else:
             # bottom -> top
-            if self.prompt_on_top:
-                return self.display.Y_END
-            else:
-                return self.display.Y_END - 1
+            return self.display.Y_END if self.prompt_on_top else self.display.Y_END - 1
 
     # ============================================================ #
     # Prompt
@@ -140,10 +136,7 @@ class SelectorView(object):
 
     @property
     def PROMPT_OFFSET_V(self):
-        if self.prompt_on_top:
-            return self.display.Y_BEGIN
-        else:
-            return self.display.Y_END
+        return self.display.Y_BEGIN if self.prompt_on_top else self.display.Y_END
 
     PROMPT  = u"QUERY> %q"
     RPROMPT = u"(%i/%I) [%n/%N]"

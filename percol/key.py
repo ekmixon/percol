@@ -185,14 +185,18 @@ class KeyHandler(object):
             if escaped:
                 k = "ESC"
             else:
-                k = "M-" + self.get_key_for(self.screen.getch(), escaped = True)
+                k = f"M-{self.get_key_for(self.screen.getch(), escaped = True)}"
         elif ch == -1:
             k = "C-c"
         return k
 
     def get_utf8_key_for(self, ch):
         buf = array.array("B", [ch])
-        buf.extend(self.screen.getch() for i in six.moves.range(1, self.get_utf8_count(ch)))
+        buf.extend(
+            self.screen.getch()
+            for _ in six.moves.range(1, self.get_utf8_count(ch))
+        )
+
         return buf.tostring().decode("utf-8")
 
     def is_utf8_multibyte_key(self, ch):

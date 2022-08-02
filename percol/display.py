@@ -18,7 +18,7 @@ FG_COLORS = {
     "white"   : curses.COLOR_WHITE,
 }
 
-BG_COLORS = dict(("on_" + name, value) for name, value in six.iteritems(FG_COLORS))
+BG_COLORS = {f"on_{name}": value for name, value in six.iteritems(FG_COLORS)}
 
 ATTRS = {
     "altcharset" : curses.A_ALTCHARSET,
@@ -66,7 +66,7 @@ def screen_len(s, beg = None, end = None):
 
     if "\t" in s:
         # consider tabstop (very naive approach)
-        beg = len(s[0:beg].expandtabs())
+        beg = len(s[:beg].expandtabs())
         end = len(s[beg:end].expandtabs())
         s = s.expandtabs()
 
@@ -185,13 +185,13 @@ class Display(object):
     def get_pos_y(self, y_align, y_offset):
         position = 0
 
-        if y_align == "top":
-            position = y_offset
-        elif y_align == "bottom":
+        if y_align == "bottom":
             position = self.HEIGHT - y_offset
         elif y_align == "center":
             position = y_offset + int(self.HEIGHT / 2)
 
+        elif y_align == "top":
+            position = y_offset
         return position
 
     def get_flag_from_attrs(self, attrs):

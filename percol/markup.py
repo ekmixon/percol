@@ -75,15 +75,12 @@ class MarkupParser(object):
         escaped = False
 
         for c in self.get_next_chars():
-            if escaped:
+            if escaped or c not in ['\\', '>']:
                 buf.append(c)
             elif c == '\\':
                 escaped = True
-            elif c == '>':
-                return "".join(buf)
             else:
-                buf.append(c)
-
+                return "".join(buf)
         raise Exception("Unclosed tag " + "".join(buf))
 
 if __name__ == "__main__":

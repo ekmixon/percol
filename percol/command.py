@@ -189,9 +189,9 @@ class SelectorCommand(object):
             self.transpose_chars()
         else:
             self.model.query = self.model.query[:caret - 1] + \
-                               self.model.query[caret] + \
-                               self.model.query[caret - 1] + \
-                               self.model.query[caret + 1:]
+                                   self.model.query[caret] + \
+                                   self.model.query[caret - 1] + \
+                                   self.model.query[caret + 1:]
             self.forward_char()
 
     def unnarrow(self):

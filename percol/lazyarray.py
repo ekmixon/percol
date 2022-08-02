@@ -24,8 +24,7 @@ class LazyArray(object):
 
     def __iter__(self):
         # yield cached result
-        for elem in self.got_elements:
-            yield elem
+        yield from self.got_elements
         # get results from iterable object
         for elem in self.source:
             self.read_count = self.read_count + 1
@@ -39,14 +38,13 @@ class LazyArray(object):
             self.pull_all()
         else:
             from itertools import islice
-            for elem in islice(self, 0, idx + 1):
+            for _ in islice(self, 0, idx + 1):
                 pass
 
         return self.got_elements[idx]
 
     def pull_all(self):
-        for elem in self:
-            pass
+        pass
 
     def has_nth_value(self, nth):
         try:
@@ -58,7 +56,7 @@ class LazyArray(object):
 if __name__ == "__main__":
     def getnumbers(n):
         for x in six.moves.range(1, n):
-            print("yield " + str(x))
+            print(f"yield {str(x)}")
             yield x
     larray = LazyArray(getnumbers(20))
     print("larray[7]: %d" % larray[7])

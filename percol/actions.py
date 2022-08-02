@@ -8,10 +8,7 @@ def double_quote_string(string):
     return '"' + string.replace('"', r'\"') + '"'
 
 def get_raw_stream(stream):
-    if six.PY2:
-        return stream
-    else:
-        return stream.buffer
+    return stream if six.PY2 else stream.buffer
 
 @action()
 def output_to_stdout(lines, percol):

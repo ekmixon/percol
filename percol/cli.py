@@ -34,10 +34,10 @@ class LoadRunCommandFileError(Exception):
         self.error = error
 
     def __str__(self):
-        return "Error in rc.py: " + str(self.error)
+        return f"Error in rc.py: {str(self.error)}"
 
 CONF_ROOT_DIR = os.path.expanduser("~/.percol.d/")
-DEFAULT_CONF_PATH = CONF_ROOT_DIR + "rc.py"
+DEFAULT_CONF_PATH = f"{CONF_ROOT_DIR}rc.py"
 
 def create_default_rc_file():
     if not os.path.exists(CONF_ROOT_DIR):
@@ -66,7 +66,9 @@ def eval_string(percol, string_to_eval, encoding = 'utf-8'):
         debug.log("Exception in eval_string", e)
 
 def error_message(message):
-    return ansi.markup("<bold><on_red><white>[Error]</white></on_red></bold> " + message)
+    return ansi.markup(
+        f"<bold><on_red><white>[Error]</white></on_red></bold> {message}"
+    )
 
 def setup_options(parser):
     parser.add_option("--tty", dest = "tty",
@@ -133,20 +135,18 @@ def set_proper_locale(options):
 def read_input(filename, encoding, reverse=False):
     import codecs
     if filename:
-        if six.PY2:
-            stream = codecs.getreader(encoding)(open(filename, "r"), "replace")
-        else:
-            stream = open(filename, "r", encoding=encoding)
+        stream = (
+            codecs.getreader(encoding)(open(filename, "r"), "replace")
+            if six.PY2
+            else open(filename, "r", encoding=encoding)
+        )
+
+    elif six.PY2:
+        stream = codecs.getreader(encoding)(sys.stdin, "replace")
     else:
-        if six.PY2:
-            stream = codecs.getreader(encoding)(sys.stdin, "replace")
-        else:
-            import io
-            stream = io.TextIOWrapper(sys.stdin.buffer, encoding=encoding)
-    if reverse:
-        lines = reversed(stream.readlines())
-    else:
-        lines = stream
+        import io
+        stream = io.TextIOWrapper(sys.stdin.buffer, encoding=encoding)
+    lines = reversed(stream.readlines()) if reverse else stream
     for line in lines:
         yield ansi.remove_escapes(line.rstrip("\r\n"))
     stream.close()
@@ -175,7 +175,7 @@ def main():
         sys.exit(1)
 
     def exit_program(msg = None, show_help = True):
-        if not msg is None:
+        if msg is not None:
             print(msg)
         if show_help:
             parser.print_help()
@@ -192,11 +192,7 @@ Maybe all descriptors are redirected."""))
     input_encoding = options.input_encoding
 
     def open_tty(ttyname):
-        if six.PY2:
-            return open(ttyname, "r+w")
-        else:
-            # See https://github.com/stefanholek/term/issues/1
-            return open(ttyname, "wb+", buffering=0)
+        return open(ttyname, "r+w") if six.PY2 else open(ttyname, "wb+", buffering=0)
 
     with open_tty(ttyname) as tty_f:
         if not tty_f.isatty():
@@ -265,7 +261,7 @@ Maybe all descriptors are redirected."""))
             set_if_not_none(options, percol.view, 'results_top_down')
             # command settings from options
             set_if_not_none(options, percol.command_candidate, 'select_ignore')
-            
+
             # enter main loop
             if options.auto_fail and percol.has_no_candidate:
                 exit_code = percol.cancel_with_exit_code()

@@ -4,10 +4,14 @@ import sys
 import os
 
 def get_ttyname():
-    for f in sys.stdin, sys.stdout, sys.stderr:
-        if f.isatty():
-            return os.ttyname(f.fileno())
-    return None
+    return next(
+        (
+            os.ttyname(f.fileno())
+            for f in (sys.stdin, sys.stdout, sys.stderr)
+            if f.isatty()
+        ),
+        None,
+    )
 
 def reconnect_descriptors(tty):
     target = {}

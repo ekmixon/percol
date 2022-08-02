@@ -111,8 +111,7 @@ class Percol(object):
         if selected_actions and self.args_for_action:
             for name, _, act_idx in selected_actions:
                 try:
-                    action = self.actions[act_idx]
-                    if action:
+                    if action := self.actions[act_idx]:
                         action.act([arg for arg, _, _ in self.args_for_action], self)
                 except Exception as e:
                     debug.log("execute_action", e)
@@ -166,7 +165,7 @@ class Percol(object):
                     # search again
                     with self.global_lock:
                         # critical section
-                        if not self.result_updating_timer is None:
+                        if self.result_updating_timer is not None:
                             # clear timer
                             self.result_updating_timer.cancel()
                             self.result_updating_timer = None
@@ -214,10 +213,7 @@ class Percol(object):
     }
 
     def import_keymap(self, keymap, reset = False):
-        if reset:
-            self.keymap = {}
-        else:
-            self.keymap = dict(self.keymap)
+        self.keymap = {} if reset else dict(self.keymap)
         for key, cmd in six.iteritems(keymap):
             self.keymap[key] = cmd
 

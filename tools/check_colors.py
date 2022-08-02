@@ -29,11 +29,10 @@ if __name__ == "__main__":
             for bg, fg in get_fg_bg():
                 try:
                     color = curses.color_pair(pair_number(fg, bg))
-                    if not attrs is None:
+                    if attrs is not None:
                         for attr in attrs:
                             color |= attr
                     screen.addstr(offset_y + bg, fg * fmt_len, fmt.format(fg, bg), color)
-                    pass
                 except curses.error:
                     pass
 

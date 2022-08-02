@@ -32,9 +32,9 @@ class Finder(object):
     lazy_finding = True
     def get_results(self, query, collection = None):
         if self.lazy_finding:
-            return LazyArray((result for result in self.find(query, collection)))
+            return LazyArray(iter(self.find(query, collection)))
         else:
-            return [result for result in self.find(query, collection)]
+            return list(self.find(query, collection))
 
 # ============================================================ #
 # Cached Finder
@@ -51,7 +51,7 @@ class CachedFinder(Finder):
         query constructs a trie)
         """
         for i in six.moves.range(len(query) - 1, 0, -1):
-            query_prefix = query[0:i]
+            query_prefix = query[:i]
             if query_prefix in self.results_cache:
                 return (line for (line, res, idx) in self.results_cache[query_prefix])
         return None
@@ -104,10 +104,7 @@ class FinderMultiQuery(CachedFinder):
             if query_is_empty:
                 res = self.dummy_res
             else:
-                if self.case_insensitive:
-                    line_to_match = line.lower()
-                else:
-                    line_to_match = line
+                line_to_match = line.lower() if self.case_insensitive else line
                 res = self.find_queries(queries, line_to_match)
                 # When invert_match is enabled (via "-v" option),
                 # select non matching line
@@ -126,8 +123,7 @@ class FinderMultiQuery(CachedFinder):
 
         for subq in sub_queries:
             if subq:
-                find_info = self.find_query(subq, line)
-                if find_info:
+                if find_info := self.find_query(subq, line):
                     res.append((subq, find_info))
                 elif and_search:
                     return None

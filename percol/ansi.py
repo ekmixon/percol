@@ -45,10 +45,10 @@ def remove_escapes(string):
     return re.sub(r"\x1B\[(?:[0-9]{1,2}(?:;[0-9]{1,2})?)?[m|K]", "", string)
 
 def decorate_parse_result(parse_result):
-    decorated_string = ""
-    for (fragment_string, attributes) in parse_result:
-        decorated_string += decorate_string_with_attributes(fragment_string, attributes)
-    return decorated_string
+    return "".join(
+        decorate_string_with_attributes(fragment_string, attributes)
+        for fragment_string, attributes in parse_result
+    )
 
 def decorate_string_with_attributes(string, attributes):
     attribute_numbers = attribute_names_to_numbers(attributes)
@@ -76,4 +76,4 @@ if __name__ == "__main__":
             print("----------------------------------------------------------")
             print(markup(test))
         except Exception as e:
-            print("fail: " + str(e))
+            print(f"fail: {str(e)}")
